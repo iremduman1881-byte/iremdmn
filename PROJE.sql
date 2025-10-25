@@ -35,7 +35,7 @@ id INT IDENTITY PRIMARY KEY,
 musteri_id INT,
 tarih DATE,
 toplam_tutar DECIMAL(10,2),
-odeme_turu VARCHAR(40) CHECK(odeme_turu IN ('Kredi Kartı', 'Havale', 'Kapıda Ödeme')),
+odeme_turu VARCHAR(40) CHECK(odeme_turu IN ('Kredi KartÃ½', 'Havale', 'KapÃ½da Ã–deme')),
 FOREIGN KEY (musteri_id) REFERENCES Musteri(id)
 );
 
@@ -50,9 +50,9 @@ FOREIGN KEY (urun_id) REFERENCES Urun(id)
 );
 
 INSERT INTO Musteri (ad,soyad,email,kayit_tarihi) VALUES
-('İrem', 'Bilmez', 'iremduman1881@gmail.com', '2022-07-01'),
-('Efe', 'Bilmez', 'efebilmez1881@gmail.com', '2022-07-21'),
-('Atlas', 'Bilmez', 'atlasblmz1881@gmail.com', '2022-07-11');
+('Irem', 'Duman', 'iremduman1881@gmail.com', '2022-07-01'),
+('Ilayda', 'Åeker', 'ilaydaseker1881@gmail.com', '2022-11-26'),
+('Atlas', 'Bido', 'atlasbido1881@gmail.com', '2022-07-10');
 
 INSERT INTO Kategori(ad) VALUES
 ('Giyim'),
@@ -62,9 +62,9 @@ INSERT INTO Kategori(ad) VALUES
 
 INSERT INTO Satici (ad,adres) VALUES
 ('ActModa', 'Mersin'),
-('İFbaby', 'Ankara'),
-('KitapMarket', 'İstanbul'),
-('TECH', 'İzmir');
+('ÃFbaby', 'Ankara'),
+('KitapMarket', 'Ãstanbul'),
+('TECH', 'Ãzmir');
 
 INSERT INTO Urun(ad,fiyat,stok,kategori_id,satici_id) VALUES
 ('Elbise', 150, 15, 1, 1),
@@ -73,28 +73,28 @@ INSERT INTO Urun(ad,fiyat,stok,kategori_id,satici_id) VALUES
 ('Roman', 80, 100, 2, 3);
 
 INSERT INTO Siparis (musteri_id, tarih, toplam_tutar, odeme_turu) VALUES
-(1, '09-08-2022',150, 'Kredi Kartı'),
+(1, '09-08-2022',150, 'Kredi KartÃ½'),
 (2, '09-11-2022', 25000, 'Havale'),
-(3, '11-12-2022', 120, 'Kapıda Ödeme');
+(3, '11-12-2022', 120, 'KapÃ½da Ã–deme');
 
 INSERT INTO Siparis_Detay( siparis_id, urun_id, adet, fiyat) VALUES
-(1, 1, 1, 1550), -- İrem elbise aldı
-(2, 2, 1, 25000), --Efe laptop aldı
-(3, 3, 1, 120); -- Atlas biberon aldı
+(1, 1, 1, 1550), -- Irem elbise aldÃ½
+(2, 2, 1, 25000), -- Ilayda laptop aldÃ½
+(3, 3, 1, 120); -- Atlas biberon aldÃ½
 
---STOK güncelleme
-UPDATE Urun SET stok = stok -1 WHERE id = 1; -- Elbise stoktan düş
--- Fiyat güncelleme
+--STOK gÃ¼ncelleme
+UPDATE Urun SET stok = stok -1 WHERE id = 1; -- Elbise stoktan dÃ¼Ã¾
+-- Fiyat gÃ¼ncelleme
 UPDATE Urun set fiyat = 200 WHERE ad = 'Elbise';
 
--- En çok sipariş veren müşteriler
+-- En Ã§ok sipariÃ¾ veren mÃ¼Ã¾teriler
 SELECT m.ad, m.soyad, COUNT(s.id) AS siparis_sayisi
 FROM Musteri m
 LEFT JOIN Siparis s ON m.id = s.musteri_id
 GROUP BY m.ad, m.soyad
 ORDER BY siparis_sayisi DESC;
 
--- En yüksek cirosu olan satıcılar
+-- En yÃ¼ksek cirosu olan satÃ½cÃ½lar
 SELECT TOP 4
     s.ad AS SaticiAdi,
 SUM(sd.adet * sd.fiyat) AS ToplamCiro
@@ -105,7 +105,7 @@ GROUP BY s.ad
 ORDER BY ToplamCiro DESC;
 
 
--- Kategori bazlı toplam satışlar
+-- Kategori bazlÃ½ toplam satÃ½Ã¾lar
 SELECT 
     k.ad AS KategoriAdi,
     SUM(sd.adet * sd.fiyat) AS ToplamSatis
@@ -115,7 +115,7 @@ INNER JOIN Siparis_Detay sd ON u.id = sd.urun_id
 GROUP BY k.ad
 ORDER BY ToplamSatis DESC;
 
--- Aylara göre sipariş sayısı
+-- Aylara gÃ¶re sipariÃ¾ sayÃ½sÃ½
 SELECT 
     YEAR(tarih) AS Yil,
     MONTH(tarih) AS Ay,
@@ -124,7 +124,7 @@ FROM Siparis
 GROUP BY YEAR(tarih), MONTH(tarih)
 ORDER BY Yil, Ay;
 
--- Müşteri,ürün, satıcı bilgisi
+-- MÃ¼Ã¾teri,Ã¼rÃ¼n, satÃ½cÃ½ bilgisi
 SELECT 
     m.ad AS MusteriAd,
     m.soyad AS MusteriSoyad,
@@ -141,17 +141,18 @@ INNER JOIN Satici s ON u.satici_id = s.id
 ORDER BY sp.id;
 
 
--- Hiç satılmamış ürünler
+-- HiÃ§ satÃ½lmamÃ½Ã¾ Ã¼rÃ¼nler
 SELECT u.ad AS UrunAdi
 FROM Urun u
 LEFT JOIN Siparis_Detay sd ON u.id = sd.urun_id
 WHERE sd.id IS NULL;
 
 
---Hiç Sipariş Vermemiş müşteriler
+--HiÃ§ SipariÃ¾ VermemiÃ¾ mÃ¼Ã¾teriler
 SELECT m.ad, m.soyad
 FROM Musteri m
 LEFT JOIN Siparis s ON m.id = s.musteri_id
 WHERE s.id IS NULL;
+
 
 
